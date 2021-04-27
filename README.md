@@ -4,7 +4,7 @@ This repository contains additional resources for the TLS-Attacker project. Here
 
 # Project Structure
 
-The main structure of the TLS-Attacker project consists of the following 5 projects. An arrow from e.g. ASN.1-Tool to ModifiableVariable indicates that ModifiableVariable requires ASN.1-Tool as a dependency.
+The main structure of the TLS-Attacker project consists of the following 5 projects. An arrow from e.g. ASN.1-Tool to ModifiableVariable indicates that ASN.1-Tool requires ModifiableVariable as a dependency.
 
 ![TLS-Attacker Structure](https://github.com/tls-attacker/TLS-Attacker-Description/blob/master/figures/structure.png)
 
