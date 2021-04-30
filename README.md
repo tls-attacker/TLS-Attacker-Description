@@ -1,3 +1,38 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [TLS-Attacker-Description](#tls-attacker-description)
+- [Project Structure](#project-structure)
+  - [Modifiable Variable](#modifiable-variable)
+  - [ASN.1-Tool](#asn1-tool)
+  - [X.509-Attacker](#x509-attacker)
+  - [TLS-Attacker](#tls-attacker)
+  - [TLS-Scanner](#tls-scanner)
+- [Installation](#installation)
+  - [Stable Versions](#stable-versions)
+  - [Development Versions/Snapshots](#development-versionssnapshots)
+- [Committing to the project](#committing-to-the-project)
+  - [Repositories](#repositories)
+  - [Branches](#branches)
+  - [Tests](#tests)
+  - [License Headers](#license-headers)
+  - [Code Style](#code-style)
+  - [Pull Requests](#pull-requests)
+- [The build pipeline / Jenkins](#the-build-pipeline--jenkins)
+  - [Viewing And Changing Jobs](#viewing-and-changing-jobs)
+  - [Maintaining Jenkins](#maintaining-jenkins)
+- [Snapshot Repository / Nexus](#snapshot-repository--nexus)
+  - [Setup](#setup)
+  - [Maintaining Nexus](#maintaining-nexus)
+- [Server Architecture / Nginx](#server-architecture--nginx)
+- [Deploying to Nexus And Maven Central](#deploying-to-nexus-and-maven-central)
+- [FAQ](#faq)
+  - [I made a change to X.509-Attacker-Development and it does not show up in TLS-Attacker-Development](#i-made-a-change-to-x509-attacker-development-and-it-does-not-show-up-in-tls-attacker-development)
+  - [I am getting XSD validation errors during a WorkflowTrace copy operation](#i-am-getting-xsd-validation-errors-during-a-workflowtrace-copy-operation)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # TLS-Attacker-Description
 
 ![licence](https://img.shields.io/badge/License-Apachev2-brightgreen.svg)
