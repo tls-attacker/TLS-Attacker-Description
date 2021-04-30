@@ -1,5 +1,9 @@
 # TLS-Attacker-Description
 
+![licence](https://img.shields.io/badge/License-Apachev2-brightgreen.svg)
+[![Build Status](https://hydrogen.cloud.nds.rub.de/buildStatus/icon.svg?job=TLS-Attacker-Description)](https://hydrogen.cloud.nds.rub.de/job/TLS-Attacker-Description/)
+
+
 This repository contains additional resources for the TLS-Attacker project. Here you can find information about installation, committing to repositories, the project structure, and more. This repository is also contains information about project-internal infrastructure to help everyone be on the same page.
 
 # Project Structure
@@ -76,7 +80,7 @@ The TLS-Attacker-Project uses Maven as a build tool. All stable versions of the 
 ```
 You can also view the TLS-Attacker-Project artifacts on [Maven Central](https://mvnrepository.com/artifact/de.rub.nds).
 
-If you want to install a runnable jar (for example the TLS-Scanner sub-project to scan your server) you can install it manually from Github. An example for the TLS-Scanner would be
+If you want to install a runnable jar (for example the TLS-Scanner sub-project to scan your server) you can install it manually from GitHub. An example for the TLS-Scanner would be
 
 ```bash
 $ git clone https://github.com/tls-attacker/TLS-Scanner.git
@@ -89,7 +93,7 @@ The jar files are accessible in the "apps" folder. If you want to copy the jar f
 
 ## Development Versions/Snapshots
 
-The compiled "Snapshot" jars from the development repositories are not uploaded to Maven Central. You either have to download all sub-projects from Github and install them manually or you can download them from the Nexus Snapshot repository. 
+The compiled "Snapshot" jars from the development repositories are not uploaded to Maven Central. You either have to download all sub-projects from GitHub and install them manually or you can download them from the Nexus Snapshot repository. 
 
 For manual installation you have to install all sub-projects as follows.
 
@@ -205,19 +209,123 @@ The `maven-eclipse-codestyle.xml` is exported from Eclipse. The easiest way to m
 
 Merging your changes into the master branch can be done via a pull request. To this end, simply open a pull request from your branch into the master branch via Github. 
 
-The [Jenkins build pipeline](#the-build-pipeline--jenkins) will test and compile your pull request and checks whether [license headers](#license-headers) and the [visual formatting](#code-style) is up to date. If any of the checks fail Jenkins will tell you on your pull request. Any fixes or changes you commit to your branch will be included in your pull request and checked again by Jenkins.
+The [Jenkins build pipeline](#the-build-pipeline--jenkins) will test and compile your pull request and checks whether [license headers](#license-headers) and the [visual formatting](#code-style) is up to date. If any of the checks fail Jenkins will tell you on your pull request. Unfortunately, due to disclosure policies, only maintainers are allowed to see the specific compilation or check error. However, they must review your pull requests anyways and can hint you in the right direction. Any fixes or changes you commit to your branch will be included in your pull request and checked again by Jenkins.
 
 Before your change or fix can be merged into the master branch, a maintainer has to approve your pull request. Before they do so, they might give you feedback in the form of comments on your pull requests. After you resolved the feedback (or asked questions on the feedback) a maintainer will review your pull request again. This process is repeated until the pull request is finally merged.
 
-If you want a specific maintainer to review your pull request (maybe your thesis advisor), you can request one on Github. You can also mention other users in your pull request if you believe they can help with something or would be interested in your change/fix.
+If you want a specific maintainer to review your pull request (maybe your thesis advisor), you can request one on GitHub. You can also mention other users in your pull request if you believe they can help with something or would be interested in your change/fix.
 
 We know it can take some time until your pull request might be merged, but please be patient :)
 
 # The build pipeline / Jenkins
 
+All sub-projects of the TLS-Attacker project have (or should have) a corresponding build pipeline. The pipeline is responsible for testing, validating, and compiling all commits and pull request of the sub-project. With a set up build pipeline, each correct and successfully commit on every branch will be marked with a green checkmark. All non-passing commits will be marked with a red cross. The same is done to the commits of any open pull request. Furthermore, the compilation status of each sub-project is indicated by a badge in the ReadMe. You can see this in this repository as well.
 
+A sub-project will also be checked by the build pipeline if any of its dependency sub-projects received a change.
+
+## Viewing And Changing Jobs
+
+The build pipeline is managed by a Jenkins server accessible at https://hydrogen.cloud.nds.rub.de/. Here you can view and edit jobs. Once you selected a job you can view the console output of a build via BuildHistory(#job)->ConsoleOutput. Under Configure, you can change the settings of the job.
+
+You can also create a new job in Jenkins using the "New Item" option in the main menu. We recommend to insert one of the already present Jenkins jobs into the "Copy from" setting. That way, you only have to change the repository link to receive an already working Jenkins job. 
+
+When creating a new Job for a sub-project, make sure to create a webhook with the following properties under GitHub-Project->Settings->Webhooks
+
+![GitHub webhook](https://github.com/tls-attacker/TLS-Attacker-Description/blob/master/resources/figures/webhook.JPG)
+
+The build badge for your ReadMe is accessible via \<Your Job\>->"Embeddable Build Status"->Markdown->unprotected. Be sure to replace http:// with https://.
+
+The correct "Source Code Management" credentials for the repository are "NDS-JENKINS/****** (Github login)". 
+
+TODO: ssh hickups when adding a node, further unintuitive settings for new jobs?
+
+## Maintaining Jenkins
+
+Under "Manage Jenkins", you can view and change access rights, manage plugins, and change Jenkins' internal settings.
+
+Under "configure System", you can change the settings of the Jenkins plugins. Important settings are the "Github Token" as a credential under "Github" and "GitHub Pull Request Builder", the "Slack Token" as a credential under "Slack", and the Admin list under "GitHub Pull Request Builder. If a user is not specified in the Admin list and not part of an organization in the Admin list their pull request will not be build.
+
+Under "Global Tool Configuration", you can add JDK installations, change Maven settings, and add Maven installations. Any new JDK installations or settings files you want to add have to be present on the machine that Jenkins runs on. See [Server Architecture](#server-architecture--nginx) for that.
+
+Under "Manage Plugins", you can install, update, and remove plugins. 
+
+Under "Configure Global Security", you can edit the access rights for different users. The "anonymous" user refers to every user that is not logged in into Jenkins. It needs the "View Status" authorization for the GitHub Build Status plugin. Currently, the anonymous user has no read authorization due to disclosure issues.
+
+Under "Manage Credentials", you can manage and add Tokens used by different Plugins to authenticate to third party services.
+
+Under "Manage Users" you can add or remove users that have potential access rights to the Jenkins server
+
+Jenkins itself must be updated via the apt package manager on the virtual machine Jenkins is running on. See [Server Architecture](#server-architecture--nginx) for information on connecting to the virtual machine.
 
 # Snapshot Repository / Nexus
+
+As mentioned in [Installation](#installation), we provide a Nexus Snapshot Repository. It contains Snapshot versions of most sub-projects of the TLS-Attacker Project. Currently, only the maven-snapshots repository is used as all stable builds are pushed to the Maven Central repository.
+
+## Setup
+
+To keep the Snapshot versions of the TLS-Attacker project under disclosure, only members of the GitHub organization "TLS-Attacker" are allowed to use it. To provide authentication, you must a GitHub personal access token with the read:org Scope selected (https://github.com/settings/tokens/new)
+
+![GitHub token](https://github.com/tls-attacker/TLS-Attacker-Description/blob/master/resources/figures/token.JPG)
+
+After generation, be sure to copy the token. You will need it during the next step.
+
+Next, open your Maven settings.xml. You can usually find it under `${user.home}/.m2/settings.xml`. If you're still confused you can run `mvn -X` and wait for Maven to tell your the location or access the settings file via your favorite IDE. (In IntelliJ: pom.xml->Context Menu->Maven->Open 'settings.xml')
+
+Add the following server and profile to your `.settings.xml`, replacing "GitHub Personal Access Token" with the token you created earlier and "Username" with your GitHub username.
+
+```xml
+<servers>
+        <server>
+            <id>rub-nexus</id>
+            <username>"Username"</username>
+            <password>"GitHub Personal Access Token"</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>TLS-Attacker</id>
+            <repositories>
+                <repository>
+                    <id>default</id>
+                    <name>Maven Central</name>
+                    <url>https://repo1.maven.org/maven2/</url>
+                </repository>
+                <repository>
+                    <id>rub-nexus</id>
+                    <name>TLS-ATTACKER SNAPSHOTS</name>
+                    <url>https://hydrogen.cloud.nds.rub.de/nexus/repository/maven-public/</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>TLS-Attacker</activeProfile>
+    </activeProfiles>
+```
+
+Maven will now download all Snapshot dependencies from the Nexus Snapshot Repository.
+
+## Maintaining Nexus
+
+The Nexus server settings can be accessed through https://hydrogen.cloud.nds.rub.de/nexus/#admin/repository. Here you can manage repositories, add cleanup policies, content selectors, routing rules, and access rights.
+
+Having a cleanup policy is advised as the Snapshot Repository should not occupy the entire storage space of the virtual machine.
+
+User authentication on the Nexus server is done via a [GitHub oauth plugin](https://github.com/L21s/nexus3-github-oauth-plugin). It allows users to log on to the Nexus server with their GitHub username and an oauth token by mapping their GitHub teams to Nexus Roles. To allow users of a GitHub team to access the Nexus servers with certain privileges, there has to be a Role in Nexus with the corresponding name. 
+
+Consider the following: There exists a team named "bachelor-students" in the GitHub group "TLS-Attacker". We not want to give all users in this team read access to the Snapshot repository to allow them to download packages via Maven. However, we want to prevent them from uploading anything into the repository or making administrative changes. The corresponding role would look as follows.
+
+![Nexus Roles](https://github.com/tls-attacker/TLS-Attacker-Description/blob/master/resources/figures/nexus_roles.JPG)
+
+Instead of inheriting from the Viewer-Role, we could also give them the following privileges manually:
+- nx-healthcheck-read
+- nx-repository-view-*-*-browse
+- nx-repository-view-*-*-read
+- nx search-read
+
+The privileges can be managed in the Privileges tab of Nexus using the following documentation https://help.sonatype.com/repomanager3/system-configuration/access-control/privileges.
+
+# Server Architecture / Nginx
 
 # Deploying to Nexus And Maven Central
 
