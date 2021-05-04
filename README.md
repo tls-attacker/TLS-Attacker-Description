@@ -26,10 +26,14 @@
   - [Setup](#setup)
   - [Maintaining Nexus](#maintaining-nexus)
 - [Server Architecture / Nginx](#server-architecture--nginx)
+  - [Nginx Configuration](#nginx-configuration)
+  - [Maven Configuration](#maven-configuration)
 - [Deploying to Nexus And Maven Central](#deploying-to-nexus-and-maven-central)
 - [FAQ](#faq)
   - [I made a change to X.509-Attacker-Development and it does not show up in TLS-Attacker-Development](#i-made-a-change-to-x509-attacker-development-and-it-does-not-show-up-in-tls-attacker-development)
   - [I am getting XSD validation errors during a WorkflowTrace copy operation](#i-am-getting-xsd-validation-errors-during-a-workflowtrace-copy-operation)
+  - [Is there a demo server that I can attack?](#is-there-a-demo-server-that-i-can-attack)
+  - [I did not find my problem or question. Where can I ask for help?](#i-did-not-find-my-problem-or-question-where-can-i-ask-for-help)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -258,6 +262,8 @@ All sub-projects of the TLS-Attacker project have (or should have) a correspondi
 
 A sub-project will also be checked by the build pipeline if any of its dependency sub-projects received a change.
 
+All commits made by Jenkins are done through the distinguished GitHub user 'NDS-Jenkins'.
+
 ## Viewing And Changing Jobs
 
 The build pipeline is managed by a Jenkins server accessible at https://hydrogen.cloud.nds.rub.de/. Here you can view and edit jobs. Once you selected a job you can view the console output of a build via BuildHistory(#job)->ConsoleOutput. Under Configure, you can change the settings of the job.
@@ -362,7 +368,39 @@ The privileges can be managed in the Privileges tab of Nexus using the following
 
 # Server Architecture / Nginx
 
+Both the Jenkins server and the Nexus server run behind an Nginx reverse proxy on `hydrogen.cloud.nds.rub.de`. This server also has to have any Maven or Java versions installed which are used in the build pipeline of the Jenkins server. The server allows ssh connections from admitted users.
+
+## Nginx Configuration
+
+The Nginx configuration is located at `etc/nginx/sites-enabled/hydrogen.cloud.nds.rub.de` and ensures that Jenkins and Nexus are only accessible via HTTPS on `/` and `/nexus/` respectively. To add a new service, install it on the virtual machine and add a new `location` in the Nginx configuration file. Remark: In order for Nexus to be accessible at `/nexus/`, we have to set `nexus-context-path=/nexus/` in `opt/nexus/sonatype-work/nexus3/etc/nexus.properties`.
+
+## Maven Configuration
+
+Maven is installed under `etc/maven/`. Here you can also find the `settings.xml` in which you can specify any settings Jenkin should use in its Maven builds. In it, we also instruct Maven to connect to the Nexus Snapshot Repository via the NDS-Jenkins GitHub user
+
 # Deploying to Nexus And Maven Central
+
+For most sub-projects, the latest development version is uploaded to the Nexus Snapshot Repository as a SNAPSHOT automatically. To this end, the Jenkins build pipeline compiles all commits to the master branches of the "development" repositories and uploads them as SNAPSHOTS to the Nexus Snapshot Repository. 
+
+To upload a sub-project to the Maven Central repository, the version number of said sub-project <b>must not</b> include "SNAPSHOT" and be a clean version number (e.g. 3.6.0).
+
+Your `settings.xml` (see [Setting up the Nexus connection](#Setup)) has to contain the following information.
+
+```xml
+<server>
+    <id>ossrh</id>
+    <username>sonatype_username</username>
+    <password>sonatype_password</password>
+</server>
+```
+The sub-project can then be <b>staged</b> to Maven Central using the following command.
+
+```bash
+$ mvn clean deploy -Dskip.signature=false -Dgpg.passphrase=PWD runnen
+```
+
+Note that the repository is only staged to the Maven central repository but not yet uploaded. To upload the repository you have to `Release` at the official Sonatype Nexus Repository Manager (https://oss.sonatype.org/#stagingRepositories).
+
 
 # FAQ
 
@@ -373,3 +411,22 @@ For the changes to take effect you have to manually install both X.509-Attacker 
 ## I am getting XSD validation errors during a WorkflowTrace copy operation
 
 It is likely that your resource files are out of date. Try running `mvn test` to update your XSD and config files.
+
+## Is there a demo server that I can attack?
+
+The TLS-Attacker sub-project provides an `openssl` server you can run on localhost. If `openssl` is not installed(it should be) you can install it with
+
+```bash
+$ apt install openssl
+```
+You can then start a server that will be accessible at `localhost:4433` using
+
+```bash
+$ cd TLS-Attacker/resources
+$ ./keygen.sh
+$ openssl s_server -key rsa1024key.pem -cert rsa1024cert.pem
+```
+
+## I did not find my problem or question. Where can I ask for help?
+
+This documentation is still under construction. We would greatly appreciate constructive feedback in the issues of this repository. You can also add a section or question to the FAQ via a pull request. You can ask also ask questions in the issues of the respective GitHub repository.
