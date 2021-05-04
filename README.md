@@ -33,6 +33,7 @@
   - [I made a change to X.509-Attacker-Development and it does not show up in TLS-Attacker-Development](#i-made-a-change-to-x509-attacker-development-and-it-does-not-show-up-in-tls-attacker-development)
   - [I am getting XSD validation errors during a WorkflowTrace copy operation](#i-am-getting-xsd-validation-errors-during-a-workflowtrace-copy-operation)
   - [Is there a demo server that I can attack?](#is-there-a-demo-server-that-i-can-attack)
+  - [I did not find my problem or question. Where can I ask for help?](#i-did-not-find-my-problem-or-question-where-can-i-ask-for-help)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -425,3 +426,7 @@ $ cd TLS-Attacker/resources
 $ ./keygen.sh
 $ openssl s_server -key rsa1024key.pem -cert rsa1024cert.pem
 ```
+
+## I did not find my problem or question. Where can I ask for help?
+
+This documentation is still under construction. We would greatly appreciate constructive feedback in the issues of this repository. You can also add a section or question to the FAQ via a pull request. You can ask also ask questions in the issues of the respective GitHub repository.
