@@ -396,8 +396,10 @@ Your `settings.xml` (see [Setting up the Nexus connection](#Setup)) has to conta
 The sub-project can then be <b>staged</b> to Maven Central using the following command.
 
 ```bash
-$ mvn clean deploy -Dskip.signature=false -Dgpg.passphrase=PWD runnen
+$ mvn clean deploy -Dskip.signature=false -Dgpg.passphrase=PWD
 ```
+
+where `PWD` is the password to a local GPG key.
 
 Note that the repository is only staged to the Maven central repository but not yet uploaded. To upload the repository you have to `Release` at the official Sonatype Nexus Repository Manager (https://oss.sonatype.org/#stagingRepositories).
 
