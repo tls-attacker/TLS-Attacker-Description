@@ -25,6 +25,7 @@
 - [Snapshot Repository / Nexus](#snapshot-repository--nexus)
   - [Setup](#setup)
   - [Maintaining Nexus](#maintaining-nexus)
+  - [Docker Repository](#docker-repository)
 - [Server Architecture / Nginx](#server-architecture--nginx)
   - [Nginx Configuration](#nginx-configuration)
   - [Maven Configuration](#maven-configuration)
@@ -315,7 +316,8 @@ Next, open your Maven settings.xml. You can usually find it under `${user.home}/
 Add the following server and profile to your `.settings.xml`, replacing "GitHub Personal Access Token" with the token you created earlier and "Username" with your GitHub username.
 
 ```xml
-<servers>
+<settings>
+    <servers>
         <server>
             <id>rub-nexus</id>
             <username>"Username"</username>
@@ -342,6 +344,7 @@ Add the following server and profile to your `.settings.xml`, replacing "GitHub 
     <activeProfiles>
         <activeProfile>TLS-Attacker</activeProfile>
     </activeProfiles>
+</settings>
 ```
 
 Maven will now download all Snapshot dependencies from the Nexus Snapshot Repository.
@@ -352,7 +355,7 @@ The Nexus server settings can be accessed through https://hydrogen.cloud.nds.rub
 
 Having a cleanup policy is advised as the Snapshot Repository should not occupy the entire storage space of the virtual machine.
 
-User authentication on the Nexus server is done via a [GitHub oauth plugin](https://github.com/L21s/nexus3-github-oauth-plugin). It allows users to log on to the Nexus server with their GitHub username and an oauth token by mapping their GitHub teams to Nexus Roles. To allow users of a GitHub team to access the Nexus servers with certain privileges, there has to be a Role in Nexus with the corresponding name. 
+User authentication on the Nexus server is done via a [GitHub oauth plugin](https://github.com/L21s/nexus3-github-oauth-plugin). It allows users to log on to the Nexus server with their GitHub username and a GitHub personal access token by mapping their GitHub teams to Nexus Roles. To allow users of a GitHub team to access the Nexus servers with certain privileges, there has to be a Role in Nexus with the corresponding name. 
 
 Consider the following: There exists a team named "bachelor-students" in the GitHub group "TLS-Attacker". We not want to give all users in this team read access to the Snapshot repository to allow them to download packages via Maven. However, we want to prevent them from uploading anything into the repository or making administrative changes. The corresponding role would look as follows.
 
@@ -365,6 +368,10 @@ Instead of inheriting from the Viewer-Role, we could also give them the followin
 - nx search-read
 
 The privileges can be managed in the Privileges tab of Nexus using the following documentation https://help.sonatype.com/repomanager3/system-configuration/access-control/privileges.
+
+## Docker Repository
+
+The Nexus server also hosts a Docker repository which can be accessed under https://hydrogen.cloud.nds.rub.de. When logging on to the repository using `docker login https://hydrogen.cloud.nds.rub.de` you have to provide credentials. These are your GitHub username and GitHub personal access token you created during the [Setup](#snapshot-repository--nexus). We refer to the official [Docker repository documentation](https://docs.docker.com/docker-hub/repos/) for further details on the usage of the docker repository.
 
 # Server Architecture / Nginx
 
