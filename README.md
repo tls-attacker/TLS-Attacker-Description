@@ -434,9 +434,9 @@ The sub-project can then be <b>staged</b> to Maven Central using the following c
 $ mvn clean deploy -Dskip.signature=false -Dgpg.passphrase=PWD
 ```
 
-where `PWD` is the password to a local GPG key.
+where `PWD` is the password to a local GPG key. Note that the key must be uploaded to a GPG key repository accepted by Sonatype (see [Sonatype Manual](https://central.sonatype.org/publish/requirements/gpg/#distributing-your-public-key)).
 
-Note that the repository is only staged to the Maven central repository but not yet uploaded. To upload the repository you have to `Release` at the official Sonatype Nexus Repository Manager (https://oss.sonatype.org/#stagingRepositories).
+Note that the repository is only staged to the Maven central repository but not yet uploaded. To upload the repository you have to `Release` at the official Sonatype Nexus Repository Manager (https://s01.oss.sonatype.org/#stagingRepositories).
 
 
 # FAQ
