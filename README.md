@@ -320,11 +320,11 @@ Jenkins itself must be updated via the apt package manager on the virtual machin
 
 # Snapshot Repository / Nexus
 
-As mentioned in [Installation](#installation), we provide a Nexus Snapshot Repository. It contains Snapshot versions of most sub-projects of the TLS-Attacker Project. Currently, only the maven-snapshots repository is used as all stable builds are pushed to the Maven Central repository.
+As mentioned in [Installation](#installation), we provide an internal Nexus Repository for snapshots and internal releases. This section describes how to configure Maven and Docker to use the repository.
 
 ## Setup
 
-To keep the Snapshot versions of the TLS-Attacker project under disclosure, only members of the GitHub organization "TLS-Attacker" are allowed to use it. To provide authentication, you must a GitHub personal access token with the read:org Scope selected (https://github.com/settings/tokens/new)
+To keep the SNAPSHOT and internal release versions of the TLS-Attacker project under disclosure, only members of the GitHub organization "TLS-Attacker" are allowed to use it. To provide authentication, you must a GitHub personal access token with the read:org Scope selected (https://github.com/settings/tokens/new)
 
 ![GitHub token](https://github.com/tls-attacker/TLS-Attacker-Description/blob/master/resources/figures/token.JPG)
 
@@ -345,28 +345,39 @@ Add the following server and profile to your `.settings.xml`, replacing "GitHub 
     </servers>
     <profiles>
         <profile>
-            <id>TLS-Attacker</id>
+            <id>protocol-attacker</id>
             <repositories>
                 <repository>
-                    <id>default</id>
-                    <name>Maven Central</name>
-                    <url>https://repo1.maven.org/maven2/</url>
-                </repository>
-                <repository>
                     <id>rub-nexus</id>
-                    <name>TLS-ATTACKER SNAPSHOTS</name>
+                    <name>Nexus Internal Repository</name>
                     <url>https://hydrogen.cloud.nds.rub.de/nexus/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
                 </repository>
             </repositories>
         </profile>
     </profiles>
+    <mirrors>
+        <mirror>
+            <id>rub-nexus</id>
+            <name>Nexus Interal Repository (Maven Central Mirror)</name>
+            <url>https://hydrogen.cloud.nds.rub.de/nexus/repository/maven-central/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
+    </mirrors>
     <activeProfiles>
-        <activeProfile>TLS-Attacker</activeProfile>
+        <activeProfile>protocol-attacker</activeProfile>
     </activeProfiles>
 </settings>
 ```
 
-Maven will now download all Snapshot dependencies from the Nexus Snapshot Repository.
+Maven will now download all dependencies and plugins from the internal Nexus Repository.
 
 ## Maintaining Nexus
 
