@@ -363,6 +363,7 @@ Add the following server and profile to your `.settings.xml`, replacing "GitHub 
             </repositories>
         </profile>
     </profiles>
+    <!-- This section is optional but recommended to reduce load on the maven central servers -->
     <mirrors>
         <mirror>
             <id>rub-nexus</id>
