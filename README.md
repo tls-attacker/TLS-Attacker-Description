@@ -264,6 +264,33 @@ To use the refined code style rules in IntelliJ, you would first need to install
 
 The `maven-eclipse-codestyle.xml` is exported from Eclipse. The easiest way to make substantial changes to it is by importing it to Eclipse, make the changes there, and exporting it again. The `checkstyle.xml` is a slightly modified version of the [Google Java Style checkstyle](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml). You can directly modify it according to the [Checkstyle documentation](http://checkstyle.org).
 
+## Logging
+
+To get better performance in TLS Attacker, we use lazzy logging. This means that when we need to add parameters to a log statement, we use the following logging:
+
+```java
+LOGGER.debug("Log: {}", value);
+```
+
+If we have a ByteArray, we could use the ByteArray as a parameter. The logging layout replaces the ByteArray with a HexString.
+
+```java
+LOGGER.debug("Log: {}", byteArray);
+```
+
+In case we need to calculate something before logging, it is best to use a lamda expression. 
+
+```java
+LOGGER.debug("Log: {}", () -> value.calculateSomething());
+```
+
+The reason for the better performance is that the calculation of the value is only performed when the log level is printed. So we get up to 500x faster performance if we do not calculate the string for a ByteArray in the log statement, as in the following example. 
+
+```java
+//Do not log bytes Array like this!
+LOGGER.debug("Log: {}", ArrayConverter.bytesToHexString(byteArray));
+```
+
 ## Pull Requests
 
 Merging your changes into the master branch can be done via a pull request. To this end, simply open a pull request from your branch into the master branch via Github. 
