@@ -291,6 +291,14 @@ The reason for the better performance is that the calculation of the value is on
 LOGGER.debug("Log: {}", ArrayConverter.bytesToHexString(byteArray));
 ```
 
+In the `log4j2.xml` it is possible to set prettyPrinting or an initialNewLine. For this the parameters `prettyPriniting` and `initNewLine` can be given to the `ExtendedPatternLayout`.
+
+In the following example prettyPrinting is used, which starts with a new line before the output of the byte array:
+
+```xml
+<ExtendedPatternLayout pattern="%highlight{%d{HH:mm:ss}{GMT+0} [%t] %-5level: %c{1} - %msg%n%throwable}" prettyPrinting="true" initNewLine="false"/>
+```
+
 ## Pull Requests
 
 Merging your changes into the master branch can be done via a pull request. To this end, simply open a pull request from your branch into the master branch via Github. 
