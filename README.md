@@ -462,11 +462,14 @@ Maven is installed under `etc/maven/`. Here you can also find the `settings.xml`
 
 # Deploying to Nexus And Maven Central
 
-For most sub-projects, the latest development version is uploaded to the Nexus Snapshot Repository as a SNAPSHOT automatically. To this end, the Jenkins build pipeline compiles all commits to the master branches of the "development" repositories and uploads them as SNAPSHOTS to the Nexus Snapshot Repository. 
+For most projects, the latest development version is build by Jenkins and uploaded to the Nexus Repository automatically. To this end, the Jenkins build pipeline compiles all commits to the master / main branches of the "development" repositories and uploads them as snapshots to the Nexus Repository. 
 
-To upload a sub-project to the Maven Central repository, the version number of said sub-project <b>must not</b> include "SNAPSHOT" and be a clean version number (e.g. 3.6.0).
+To release a stable version (i. e. without the -SNAPSHOT modifier) to Nexus and / or Maven Central one can use the Maven Release Plugin. The plugin is included as part of the Bill of Materials (BOM) and can therefore be used by any project importing or extending upon the BOM. The release consists out of two steps:
 
-Your `settings.xml` (see [Setting up the Nexus connection](#Setup)) has to contain the following information.
+1. Prepare the release by creating the required commits, tagging the release commit with the version number and pushing the changes to GitHub.
+2. Release the tagged release created before to Nexus / Maven Central.
+
+Both, releasing to Nexus and Maven Central, requires credentials and (in case of Maven Central) a PGP key (signing will be enabled automatically by the maven-central profile). Your `settings.xml` (see [Setting up the Nexus connection](#Setup)) has to contain the following information:
 
 ```xml
 <server>
@@ -475,16 +478,24 @@ Your `settings.xml` (see [Setting up the Nexus connection](#Setup)) has to conta
     <password>sonatype_password</password>
 </server>
 ```
-The sub-project can then be <b>staged</b> to Maven Central using the following command.
+
+To create a new release issue the following commands:
 
 ```bash
-$ mvn clean deploy -Dskip.signature=false -Dgpg.passphrase=PWD
+git branch release/v{Release}
+# Perform a internal release first (the default)
+mvn release:prepare
+mvn release:perform
+# If you choose to release to Maven Central as well you'll have
+# to check out the tag and perform a mvn deploy with the correct profile
+git checkout tags/v{Release}
+mvn deploy -P maven-central -Dgpg.passphrase=PWD
+# Now you can create PR to merge the release into master / main (branching is required when the main branch is write-protected via branch protection rules)
 ```
 
-where `PWD` is the password to a local GPG key. Note that the key must be uploaded to a GPG key repository accepted by Sonatype (see [Sonatype Manual](https://central.sonatype.org/publish/requirements/gpg/#distributing-your-public-key)).
+where `PWD` is the password to a local GPG key. Note that the key must be uploaded to a GPG key repository accepted by Sonatype (see [Sonatype Manual](https://central.sonatype.org/publish/requirements/gpg/#distributing-your-public-key)). Note that the repository is only staged to the Maven central repository but not yet uploaded. To upload the repository you have to `Release` at the official Sonatype Nexus Repository Manager (https://s01.oss.sonatype.org/#stagingRepositories).
 
-Note that the repository is only staged to the Maven central repository but not yet uploaded. To upload the repository you have to `Release` at the official Sonatype Nexus Repository Manager (https://s01.oss.sonatype.org/#stagingRepositories).
-
+If the project uses Spotless with the <ratchetFrom> configuration, one needs to skip Spotless execution during `mvn release:perform` to avoid missing refspecs. This can be done by appending `-Darguments="-Dspotless.apply.skip"`.
 
 # FAQ
 
