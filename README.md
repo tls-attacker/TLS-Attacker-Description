@@ -489,7 +489,7 @@ mvn release:perform
 # If you choose to release to Maven Central as well you'll have
 # to check out the tag and perform a mvn deploy with the correct profile
 git checkout tags/v{Release}
-mvn deploy -P maven-central -Dgpg.passphrase="PWD"
+mvn deploy -P maven-release -Dgpg.passphrase="PWD"
 # Now you can create PR to merge the release into master / main (branching is required when the main branch is write-protected via branch protection rules)
 ```
 
