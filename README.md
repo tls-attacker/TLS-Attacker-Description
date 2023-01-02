@@ -127,7 +127,7 @@ You can either work on the stable versions or on the development/Snapshot versio
 
 ## Stable Versions
 
-The TLS-Attacker-Project uses Maven as a build tool. All stable versions of the sub-projects are accessible via Maven Central and can be included as dependencies in your projects pom.xml. An example for the X.509-Attacker is given below.
+The TLS-Attacker-Project uses Maven as a build tool. All stable versions are first deployed to [the internal Nexus repository](#snapshot-repository--nexus) and all versions required for public releases are also deployed to Maven Central. Stable versions can be included as dependencies in your projects pom.xml. An example for the X.509-Attacker is given below.
 
 ```xml
 <!-- https://mvnrepository.com/artifact/de.rub.nds/X509Attacker -->
@@ -520,6 +520,12 @@ You can then start a server that will be accessible at `localhost:4433` using
 $ cd TLS-Attacker/resources
 $ ./keygen.sh
 $ openssl s_server -key rsa1024key.pem -cert rsa1024cert.pem
+```
+
+## I need to build a project frequently but executing the tests takes very long
+By default, all unit and integration tests are run upon building a project using mvn install. If you want to skip the more extensive integration tests while still executing basic unit tests, you can use the command below.
+```bash
+$ mvn clean package && mvn clean install -DskipTests
 ```
 
 ## I did not find my problem or question. Where can I ask for help?
