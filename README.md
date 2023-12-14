@@ -5,7 +5,7 @@
 - [TLS-Attacker-Description](#tls-attacker-description)
 - [Project Structure](#project-structure)
   - [Modifiable Variable](#modifiable-variable)
-  - [ASN.1-Tool](#asn1-tool)
+  - [ASN.1-Attacker](#asn1-attacker)
   - [X.509-Attacker](#x509-attacker)
   - [TLS-Attacker](#tls-attacker)
   - [TLS-Scanner](#tls-scanner)
@@ -51,7 +51,7 @@ This repository contains additional resources for the TLS-Attacker project. Here
 
 # Project Structure
 
-The main structure of the TLS-Attacker project consists of the following 5 sub-projects. An arrow from e.g. ASN.1-Tool to ModifiableVariable indicates that ASN.1-Tool requires ModifiableVariable as a dependency.
+The main structure of the TLS-Attacker project consists of the following 5 sub-projects. An arrow from e.g. ASN.1-Attacker to ModifiableVariable indicates that ASN.1-Attacker requires ModifiableVariable as a dependency.
 
 ![TLS-Attacker Structure](https://github.com/tls-attacker/TLS-Attacker-Description/blob/master/resources/figures/structure.png)
 
@@ -67,13 +67,13 @@ Modifiable variable allows one to set modifications to basic types after or befo
 
 The concept of modifiable variables is directly or indirectly used by all other sub-projects in the TLS-Attacker-Project.
 
-## ASN.1-Tool
+## ASN.1-Attacker
 
-Public: https://github.com/tls-attacker/ASN.1-Tool
+Public: https://github.com/tls-attacker/ASN.1-Attacker
 
-Development: https://github.com/tls-attacker/ASN.1-Tool-Development
+Development: https://github.com/tls-attacker/ASN.1-Attacker-Development
 
-ASN.1 Tool is an open-source framework for generating arbitrary ASN.1 structures. The tool also provides mechanisms to define modifications of original ASN.1 values. Resulting binary ASN.1 structures can then be used for further processing in other tools.
+ASN.1-Attacker is an open-source framework for generating arbitrary ASN.1 structures. The tool also provides mechanisms to define modifications of original ASN.1 values. The resulting binary ASN.1 structures can then be used for further processing in other tools.
 
 The tool is not intended to be used directly, but by other software projects (such as the TLS-Attacker-Project) as a library.
 
@@ -83,7 +83,7 @@ Public: https://github.com/tls-attacker/X509-Attacker
 
 Development: https://github.com/tls-attacker/X509-Attacker-Development
 
-X.509-Attacker is a tool based on ASN.1 Tool for creating arbitrary certificates; including especially invalid and malformed certificates. Since X.509 certificates encode their contents in ASN.1, this tool extends the features of the ASN.1 Tool in terms of certificate signing. Also, X.509-Attacker introduces a feature of referencing XML elements in order to avoid redundancies when defining certificates in XML.
+X.509-Attacker is a tool based on ASN.1-Attacker for creating arbitrary certificates; including especially invalid and malformed certificates. Since X.509 certificates encode their contents in ASN.1, this tool extends the features of the ASN.1 Tool in terms of certificate signing. Also, X.509-Attacker introduces a feature of referencing XML elements in order to avoid redundancies when defining certificates in XML.
 
 While X.509-Attacker can be used on its own, the [TLS-Attacker](#tls-attacker) sub-project uses it as a dependency to create certificates in TLS handshakes.
 
@@ -161,20 +161,20 @@ $ git clone https://github.com/tls-attacker/ModifiableVariable.git
 $ cd ModifiableVariable
 $ mvn clean install
 $ cd ../
-$ git clone https://github.com/tls-attacker/ASN.1-Tool-Development.git
-$ cd ASN.1-Tool
+$ git clone https://github.com/tls-attacker/ASN.1-Attacker-Development.git
+$ cd ASN.1-Attacker-Development
 $ mvn clean install
 $ cd ../
 $ git clone https://github.com/tls-attacker/X509-Attacker-Development.git
-$ cd X509-Attacker
+$ cd X509-Attacker-Development
 $ mvn clean install
 $ cd../
 $ git clone https://github.com/tls-attacker/TLS-Attacker-Development.git
-$ cd TLS-Attacker
+$ cd TLS-Attacker-Development
 $ mvn clean install
 $ cd ../
 $ git clone https://github.com/tls-attacker/TLS-Scanner-Development.git
-$ cd TLS-Scanner
+$ cd TLS-Scanner-Development
 $ mvn clean install
 ```
 
