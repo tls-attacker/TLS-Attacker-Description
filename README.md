@@ -21,6 +21,7 @@
   - [Tests](#tests)
   - [License Headers](#license-headers)
   - [Code Style](#code-style)
+  - [Logging](#logging)
   - [Pull Requests](#pull-requests)
 - [The build pipeline / Jenkins](#the-build-pipeline--jenkins)
   - [Viewing And Changing Jobs](#viewing-and-changing-jobs)
@@ -33,10 +34,13 @@
   - [Nginx Configuration](#nginx-configuration)
   - [Maven Configuration](#maven-configuration)
 - [Deploying to Nexus And Maven Central](#deploying-to-nexus-and-maven-central)
+  - [Prerequisites for Nexus](#prerequisites-for-nexus)
+  - [Setting up Maven Central](#setting-up-maven-central)
 - [FAQ](#faq)
   - [I made a change to X.509-Attacker-Development and it does not show up in TLS-Attacker-Development](#i-made-a-change-to-x509-attacker-development-and-it-does-not-show-up-in-tls-attacker-development)
   - [I am getting XSD validation errors during a WorkflowTrace copy operation](#i-am-getting-xsd-validation-errors-during-a-workflowtrace-copy-operation)
   - [Is there a demo server that I can attack?](#is-there-a-demo-server-that-i-can-attack)
+  - [I need to build a project frequently but executing the tests takes very long](#i-need-to-build-a-project-frequently-but-executing-the-tests-takes-very-long)
   - [I did not find my problem or question. Where can I ask for help?](#i-did-not-find-my-problem-or-question-where-can-i-ask-for-help)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -462,40 +466,88 @@ Maven is installed under `etc/maven/`. Here you can also find the `settings.xml`
 
 # Deploying to Nexus And Maven Central
 
-For most projects, the latest development version is build by Jenkins and uploaded to the Nexus Repository automatically. To this end, the Jenkins build pipeline compiles all commits to the master / main branches of the "development" repositories and uploads them as snapshots to the Nexus Repository. 
+For most projects, the latest development version is build by Jenkins and uploaded to the [Nexus Repository](#snapshot-repository--nexus) automatically. To this end, the Jenkins build pipeline compiles all commits to the master / main branches of the "development" repositories and uploads them as snapshots to the Nexus Repository.
 
-To release a stable version (i. e. without the -SNAPSHOT modifier) to Nexus and / or Maven Central one can use the Maven Release Plugin. The plugin is included as part of the Bill of Materials (BOM) and can therefore be used by any project importing or extending upon the BOM. The release consists out of two steps:
+To release a stable version (i.e., without the -SNAPSHOT modifier) to Nexus and / or Maven Central one can use the Maven Release Plugin. The plugin is included as part of the Bill of Materials (BOM) and can therefore be used by any project importing or extending upon the BOM. The release consists out of two steps (covered by the commands below):
 
 1. Prepare the release by creating the required commits, tagging the release commit with the version number and pushing the changes to GitHub.
 2. Release the tagged release created before to Nexus / Maven Central.
 
-Both, releasing to Nexus and Maven Central, requires credentials and (in case of Maven Central) a PGP key (signing will be enabled automatically by the maven-central profile). Your `settings.xml` (see [Setting up the Nexus connection](#Setup)) has to contain the following information:
-
-```xml
-<server>
-    <id>ossrh</id>
-    <username>sonatype_username</username>
-    <password>sonatype_password</password>
-</server>
-```
-
 To create a new release issue the following commands:
 
+1. `git branch release/v{Release}`
+    - Needed if the master is write protected. Check whether this has been done before for the repo you are releasing
+    - If you create a branch, create a PR after you are done
+2. `mvn release:prepare`
+    - asks which version to prepare and what the next version will be
+    - creates commits
+    - creates git tag
+    - pushes commit+git tag
+3. `mvn release:perform`
+    - pushes to our nexus
+4. `git checkout tags/v{Release}`
+    - so that you release the correct version to maven central
+5. `mvn deploy -P maven-release`
+    - pushes to maven central
+    - You can see the progress at [nexus repository manager (StatgingRepositories)](https://s01.oss.sonatype.org/#stagingRepositories)
+    - You can pass the passphrase for your GPG key using `-Dgpg.passphrase="PWD"`
+        - Keep in mind that this might get logged to your shell history, i.e. the passphrase is then stored in plaintext on your disk
+        - If you omit this, it should ask interactively for the passphrase
+    - `-DstagingProgressTimeoutMinutes=10`
+        - If the push timeouts you can try to increase the timeout a bit
+        - However, it seems that it is usually the fault of the server and you should check for an open issue or create one
+6. `mvn -P maven-release nexus-staging:release`
+    - Actually release the pushed artifact
+    - You can also do this via the [nexus repository manager (StatgingRepositories)](https://s01.oss.sonatype.org/#stagingRepositories)
+
+(Again the commands in a single code block for easy copy+paste)
 ```bash
 git branch release/v{Release}
-# Perform a internal release first (the default)
 mvn release:prepare
 mvn release:perform
-# If you choose to release to Maven Central as well you'll have
-# to check out the tag and perform a mvn deploy with the correct profile
+
 git checkout tags/v{Release}
-mvn deploy -P maven-release -Dgpg.passphrase="PWD"
-# Now you can create PR to merge the release into master / main (branching is required when the main branch is write-protected via branch protection rules)
+mvn deploy -P maven-release
+mvn -P maven-release nexus-staging:release
 ```
 
 where `PWD` is the password to a local GPG key. Note that the key must be uploaded to a GPG key repository accepted by Sonatype (see [Sonatype Manual](https://central.sonatype.org/publish/requirements/gpg/#distributing-your-public-key)). Note that the repository is only staged to the Maven central repository but not yet uploaded. To upload the repository you have to `Release` at the official Sonatype Nexus Repository Manager (https://s01.oss.sonatype.org/#stagingRepositories).
 
 If the project uses Spotless with the <ratchetFrom> configuration, one needs to skip Spotless execution during `mvn release:perform` to avoid missing refspecs. This can be done by appending `-Darguments="-Dspotless.apply.skip"`.
+
+## Prerequisites for Nexus
+
+To be able to push to our [Nexus Repository](#snapshot-repository--nexus) you need a published pgp key.
+I am not sure which E-Mail has to be included in the pgp key; probably one of your GitHub email addresses.
+Further, you need to be part of the [tls-attacker-extended](https://github.com/orgs/tls-attacker/teams/tls-attacker-extended/members) github group.
+
+## Setting up Maven Central
+
+To deploy to maven central you need to do the following things:
+
+1. Register at the [issue tracker](https://issues.sonatype.org/) of maven central
+2. Ask for permissions for [TLS Attacker](https://issues.sonatype.org/browse/OSSRH-61488); Someone who already has developer access must back that request, or they can request it for you. Just look at the history of the linked issue.
+    - This may take a day or two
+3. Setup credentials for maven
+    - Once you have permission you should be able to login to the [nexus repository manager](https://s01.oss.sonatype.org/) with the same credentials as you have at the issue tracker
+    - On the top right click on your name, "Profile"
+    - In the "Profile" pane you have a dropdown that states "Summary"; change that to "User Token"
+    - Create a new token by clicking "Access User Token"
+    - Copy that token into your `.m2/settings.xml` into the `settings/servers` (cf. [Setting up the Nexus connection](#Setup))
+    - Change the id of the just pasted server to `ossrh`.
+    - It should look something like this:
+      ```xml
+      <server>
+          <id>ossrh</id>
+          <username>random letters</username>
+          <password>more random letters</password>
+      </server>
+      ```
+4. Create and Publish a pgp key.
+    - I used thunderbird for publishing it.
+    - I am not sure which E-Mail has to be included in the pgp key; probably the one you used to register at the issue tracker.
+
+You should now be able to run the commands to publish a new release.
 
 # FAQ
 
