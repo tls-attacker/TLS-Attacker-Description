@@ -511,9 +511,7 @@ mvn deploy -P maven-release
 mvn -P maven-release nexus-staging:release
 ```
 
-where `PWD` is the password to a local GPG key. Note that the key must be uploaded to a GPG key repository accepted by Sonatype (see [Sonatype Manual](https://central.sonatype.org/publish/requirements/gpg/#distributing-your-public-key)). Note that the repository is only staged to the Maven central repository but not yet uploaded. To upload the repository you have to `Release` at the official Sonatype Nexus Repository Manager (https://s01.oss.sonatype.org/#stagingRepositories).
-
-If the project uses Spotless with the <ratchetFrom> configuration, one needs to skip Spotless execution during `mvn release:perform` to avoid missing refspecs. This can be done by appending `-Darguments="-Dspotless.apply.skip"`.
+If the project uses Spotless with the `<ratchetFrom>` configuration, one needs to skip Spotless execution during `mvn release:perform` to avoid missing refspecs. This can be done by appending `-Darguments="-Dspotless.apply.skip"`.
 
 ## Prerequisites for Nexus
 
@@ -544,7 +542,7 @@ To deploy to maven central you need to do the following things:
       </server>
       ```
 4. Create and Publish a pgp key.
-    - I used thunderbird for publishing it.
+    - The key must be uploaded to a GPG key repository accepted by Sonatype (see [Sonatype Manual](https://central.sonatype.org/publish/requirements/gpg/#distributing-your-public-key)). I used thunderbird for publishing it.
     - I am not sure which E-Mail has to be included in the pgp key; probably the one you used to register at the issue tracker.
 
 You should now be able to run the commands to publish a new release.
