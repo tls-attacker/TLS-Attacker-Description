@@ -371,15 +371,15 @@ After generation, be sure to copy the token. You will need it during the next st
 
 Next, open your Maven settings.xml. You can usually find it under `${user.home}/.m2/settings.xml`. If you're still confused you can run `mvn -X` and wait for Maven to tell your the location or access the settings file via your favorite IDE. (In IntelliJ: pom.xml->Context Menu->Maven->Open 'settings.xml')
 
-Add the following server and profile to your `settings.xml`, replacing "GitHub Personal Access Token" with the token you created earlier and "Username" with your GitHub username.
+Add the following server and profile to your `settings.xml`, replacing `ghp_XXXXXXXXXXXXXXXXXXXX` (within `<password>`) with the token you created earlier and `github_username` (within `username`) with your GitHub username.
 
 ```xml
 <settings>
     <servers>
         <server>
             <id>rub-nexus</id>
-            <username>"Username"</username>
-            <password>"GitHub Personal Access Token"</password>
+            <username>github_username</username>
+            <password>ghp_XXXXXXXXXXXXXXXXXXXX</password>
         </server>
     </servers>
     <profiles>
