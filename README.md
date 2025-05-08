@@ -408,7 +408,7 @@ Add the following server and profile to your `settings.xml`, replacing `ghp_XXXX
             <id>rub-nexus</id>
             <name>Nexus Interal Repository (Maven Central Mirror)</name>
             <url>https://hydrogen.cloud.nds.rub.de/nexus/repository/maven-central/</url>
-            <mirrorOf>central</mirrorOf>
+            <mirrorOf>central,!central-upload</mirrorOf>
         </mirror>
     </mirrors>
     <activeProfiles>
@@ -487,7 +487,7 @@ To create a new release issue the following commands:
     - pushes to our nexus
 4. `git checkout tags/v{Release}`
     - so that you release the correct version to maven central
-5. `mvn deploy -P maven-release`
+5. `mvn deploy -P central`
     - pushes to maven central
     - You can see the progress at [nexus repository manager (StatgingRepositories)](https://s01.oss.sonatype.org/#stagingRepositories)
     - You can pass the passphrase for your GPG key using `-Dgpg.passphrase="PWD"`
@@ -496,9 +496,6 @@ To create a new release issue the following commands:
     - `-DstagingProgressTimeoutMinutes=10`
         - If the push timeouts you can try to increase the timeout a bit
         - However, it seems that it is usually the fault of the server and you should check for an open issue or create one
-6. `mvn -P maven-release nexus-staging:release`
-    - Actually release the pushed artifact
-    - You can also do this via the [nexus repository manager (StatgingRepositories)](https://s01.oss.sonatype.org/#stagingRepositories)
 
 (Again the commands in a single code block for easy copy+paste)
 ```bash
@@ -507,8 +504,7 @@ mvn release:prepare
 mvn release:perform
 
 git checkout tags/v{Release}
-mvn deploy -P maven-release
-mvn -P maven-release nexus-staging:release
+mvn deploy -P central
 ```
 
 If the project uses Spotless with the `<ratchetFrom>` configuration, one needs to skip Spotless execution during `mvn release:perform` to avoid missing refspecs. This can be done by appending `-Darguments="-Dspotless.apply.skip"`.
@@ -527,16 +523,16 @@ To deploy to maven central you need to do the following things:
 2. Ask for permissions for [TLS Attacker](https://issues.sonatype.org/browse/OSSRH-61488); Someone who already has developer access must back that request, or they can request it for you. Just look at the history of the linked issue.
     - This may take a day or two
 3. Setup credentials for maven
-    - Once you have permission you should be able to login to the [nexus repository manager](https://s01.oss.sonatype.org/) with the same credentials as you have at the issue tracker
+    - Once you have permission you should be able to login to the [Central Portal](https://central.sonatype.com) with the same credentials as you have at the issue tracker
     - On the top right click on your name, "Profile"
     - In the "Profile" pane you have a dropdown that states "Summary"; change that to "User Token"
     - Create a new token by clicking "Access User Token"
     - Copy that token into your `.m2/settings.xml` into the `settings/servers` (cf. [Setting up the Nexus connection](#Setup))
-    - Change the id of the just pasted server to `ossrh`.
+    - Change the id of the just pasted server to `central-upload`.
     - It should look something like this:
       ```xml
       <server>
-          <id>ossrh</id>
+          <id>central-upload</id>
           <username>random letters</username>
           <password>more random letters</password>
       </server>
