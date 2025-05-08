@@ -363,23 +363,19 @@ As mentioned in [Installation](#installation), we provide an internal Nexus Repo
 
 ## Setup
 
-To keep the SNAPSHOT and internal release versions of the TLS-Attacker project under disclosure, only members of the GitHub organization "TLS-Attacker" are allowed to use it. To provide authentication, you must a GitHub personal access token with the read:org Scope selected (https://github.com/settings/tokens/new)
+To keep the SNAPSHOT and internal release versions of the TLS-Attacker project under disclosure, only members of the GitHub organization "TLS-Attacker" are allowed to use it, and you need to be given access rights by one of the Administrators. 
 
-![GitHub token](https://github.com/tls-attacker/TLS-Attacker-Description/blob/master/resources/figures/token.JPG)
+Once you have credentials, open your Maven settings.xml. You can usually find it under `${user.home}/.m2/settings.xml`. If you're still confused, you can run `mvn -X` and wait for Maven to tell you the location or access the settings file via your favorite IDE. (In IntelliJ: pom.xml->Context Menu->Maven->Open 'settings.xml')
 
-After generation, be sure to copy the token. You will need it during the next step.
-
-Next, open your Maven settings.xml. You can usually find it under `${user.home}/.m2/settings.xml`. If you're still confused you can run `mvn -X` and wait for Maven to tell your the location or access the settings file via your favorite IDE. (In IntelliJ: pom.xml->Context Menu->Maven->Open 'settings.xml')
-
-Add the following server and profile to your `settings.xml`, replacing `ghp_XXXXXXXXXXXXXXXXXXXX` (within `<password>`) with the token you created earlier and `github_username` (within `username`) with your GitHub username.
+Add the following server and profile to your `settings.xml`, replacing `nexus_password` (within `<password>`) with the provided password and `nexus_username` (within `username`) with your nexus username.
 
 ```xml
 <settings>
     <servers>
         <server>
             <id>rub-nexus</id>
-            <username>github_username</username>
-            <password>ghp_XXXXXXXXXXXXXXXXXXXX</password>
+            <username>nexus_username</username>
+            <password>nexus_password</password>
         </server>
     </servers>
     <profiles>
