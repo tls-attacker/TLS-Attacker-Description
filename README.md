@@ -437,7 +437,7 @@ The privileges can be managed in the Privileges tab of Nexus using the following
 
 ## Docker Repository
 
-The Nexus server also hosts a Docker repository which can be accessed under https://hydrogen.cloud.nds.rub.de. When logging on to the repository using `docker login https://hydrogen.cloud.nds.rub.de` you have to provide credentials. These are your GitHub username and GitHub personal access token you created during the [Setup](#snapshot-repository--nexus). After logging on to the repository, you can pull docker images, e.g.
+The Nexus server also hosts a Docker repository which can be accessed under https://hydrogen.cloud.nds.rub.de. When logging on to the repository using `docker login https://hydrogen.cloud.nds.rub.de` you have to provide credentials. These are your nexus credentials that are provided by us during the [Setup](#snapshot-repository--nexus). After logging on to the repository, you can pull docker images, e.g.
 ```
 docker login -u <username> -p <access token> https://hydrogen.cloud.nds.rub.de/nexus
 
